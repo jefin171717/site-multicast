@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+    <title>Algoritmos de Multicast</title>
+    <meta name="author" content="Jeferson Rodrigo" />
+    <meta name="description" content="Ensinando algoritmos multicast" />
+    <meta name="keywords" content="sistemas distribuídos, algoritmos, multicast" />
+    <meta name="Resource-type" content="Document" />
+
+    <link rel="stylesheet" type="text/css" href="css/full-page-multicast.css" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" type="text/css" href="css/responsive.css" />
+    <link rel="stylesheet" type="text/css" href="css/plugins.css" />
+    <link rel="shortcut icon" type="image/png" href="../img/paper-airplane-icon.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <button onclick="topFunction()" id="myBtn" title="Go to top" ><i class="fa fa-angle-up icon"></i></button>
+    <div id="wraper sticky">
+        <section id="page-title">
+            <div class="container-header">
+                <!-- <div class="page-title">
+                </div> -->
+                <div><a href="../site.html" class="btn btn-outline btn-rounded btn-light">Home</a></div>
+                <div><a href="multicast.html" class="btn btn-outline btn-rounded btn-light">Multicast</a></div>
+            </div>
+        </section>
+
+        <section class="stickyConfig">
+            <div class="container">
+                <div class="text">
+                    <h1>Introdução</h1>
+                    <h3>O que é o <i>multicast</i> na computação distribuída?</h3>
+                    <p>O termo <i>multicast</i> significa difusão seletiva. Por exemplo, no caso de uma rádio, estamos ouvindo uma sequência de mensagens que são transmitidas de um único ponto de origem, mas que todas as pessoas sintonizadas naquela frequência receberão aquela mensagem (áudio). Na computação distribuída, podemos fazer essa analogia quando definimos o termo <i>multicast</i>. É uma operação que permite o envio de uma única mensagem para um conjunto de processos que fazem parte de um <b>grupo</b>, ou seja, todos os processos do grupo receberão o dado vindo daquela mensagem. O processo origem não conhece o endereço dos processos destinos.</p>
+                    
+                    
+
+                    <p>Para apresentar os algoritmos, considera-se um conjunto de n processos P<sub>i</sub>, com 0 <= i < n, que se comunicam por troca de mensagems em canais confiáveis. Processos podem sofrer de falhas por colapso (crash). Para a comunicação por <i>multicast</i>, processos participam de um grupo g e somente processos deste grupo são destinos de multicast. Por simplicidadae, será restringido que os processos fazem parte de, no máximo, um grupo por vez.</p>
+                    
+                    <p>Respeitando Coulouris et. al. (2013), a operação <em>multicast(g, m)</em> envia a mensagem m para todos os membros (processos) do grupo g. A operação <em>deliver(m)</em> consiste em entregar (distribuir) uma mensagem recebida por <i>multicast</i> para o processo que a executa. O termo entregar é usado para indicar que a mensagem nem sempre é passada para a camada de aplicação, ao chegar no processo.</p>
+                    <p>Para os algoritmos de <i>multicast</i>, consideram-se as seguintes propriedades:</p>
+                    <ul>
+                        <li><b><em>Integridade:</em></b> a mensagem recebida é a mesma que foi enviada e nenhuma mensagem é entregue duas vezes;</li>
+                        <li><b><em>Validade:</em></b> qualquer mensagem enviada é entregue;</li>
+                        <li><b><em>Acordo:</em></b> se a mensagem é entregue para um processo, então ela é entregue para todos os processos do grupo.</li>
+
+                    </ul>
+
+                    <h2>Algoritmo de <i>Multicast</i> Básico</h2>
+                    <p>O <i>multicast</i> básico é uma primitiva que garante que um <button class="btn btn-light btn-xs" type="button" onmouseover="showProcess()" onmouseout="unshowProcess()">processo</button> correto entregará a <button class="btn btn-light btn-xs" type="button" onmouseover="showToken()" onmouseout="unshowToken()">mensagem</button>, desde que o processo difusor não falhe. Para este algoritmo, a primitiva de <i>multicast</i> é conhecida como <b><em>B-multicast</em></b>, enquanto <b><em>B-deliver</em></b> é a primitiva de entrega básica da mensagem. Neste algoritmo, processos podem pertencer a vários grupos, mas cada mensagem de <i>multicast</i> é destinada a um grupo em particular.</p>
+                    <p>A maneira mais simples de implementar o <em>B-multicast</em> é através do uso de operações de comunicação ponto-a-ponto confiáveis. A operação <b><em>send(P, m)</em></b> significa o envio da mensagem m para o processo P, enquanto a operação <b><em>receive(m)</em></b> indica o recebimento da mensagem m por um processo destino. As primitivas de <i>multicast</i> básico e entrega básica ficam como segue:</p>
+                    <pre>
+                        <code>
+                            B-multicast(g, m):
+                                Para cada processo P<sub>i</sub> percentente ao grupo g, send(P<sub>i</sub>, m);
+
+                            Em receive(m) no processo P:
+                                B-deliver(m) em P;
+                        </code>
+                    </pre>
+                    
+                    <p>A simulção abaixo demonstra o funcionamento do algortimo de multicast básico. O usuário pode interagir clicando no botão <button class="btn btn-light btn-xs" type="button">Iniciar</button> e acompanhar passo a passo de sua execução clicando no botão <button class="btn btn-light btn-xs" type="button">Avançar</button>. Os processos são representados pelo <button class="btn btn-light btn-xs" type="button" onmouseover="showProcess()" onmouseout="unshowProcess()"><span style="color: orange;">Circulo Laranja</span></button> e a mensagem é representada pelo <button class="btn btn-light btn-xs" type="button" onmouseover="showToken()" onmouseout="unshowToken()">Circulo Branco</button>. Já o <button class="btn btn-light btn-xs" type="button">Quadrado</button> ao lado dos processos, representa o status da mensagem, <button class="btn btn-light btn-xs" type="button"><span style="color: blue;">Azul</span></button> para <b><em>mensagem entregue</em> e <button class="btn btn-light btn-xs" type="button"><span style="color: red;">Vermelho</span></button> para falha</b>. Além disso, o usuário pode selecionar um processo e clicar no botão <button class="btn btn-light btn-xs" type="button">Mudar Processo</button></p>
+                    
+                    <div>
+                        
+                        <!-- Começa aqui-->
+                        <div class="algSection">
+                            <div class="algContent">
+                                <div class="instruction">
+                                    <div id="buttonsR2">
+                                        <button onclick="playAlg()" type="button" class="btn btn-rounded btn-light btn-sm">Iniciar</button>
+                                    </div>
+                                    
+                                    
+                                </div>
+                                
+                                <div class="alg" id="mbsvg"></div>
+                                <div class="interaction">
+                                    <div id="buttons">
+                                        <select id="combobox">
+                                           
+                                        </select>
+                                       
+                                        <button onclick="addPToken()" type="button"
+                                            class="btn btn-rounded btn-light btn-sm">Mudar processo</button>
+
+                                        <div class="sliderArea">
+                                            <input class="slider" type="range" min="5" max="7" step="1" value="3"
+                                                id="sliderNodePart"></input>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            
+        </section>
+
+        <section class="stickyConfig">
+            <div class="container">
+                <div class="text">
+                    <h2>Algoritmo de <i>Multicast</i> Confiável</h2>
+                    <p>Outro algoritmo, apresentado por Coulouris et. al. (2013) é o <i>multicast</i> confiável atuando sobre as operações <i>B-multicast</i> e <i>B-deliver</i>. Este algoritmo considera as primitivas R-multicast e <b><i>R-deliver</i></b> para o <i>multicast</i> confiável e para a entrega confiável, respectivamente.</p>
+                    <p>O algortimo de <i>multicast</i> confiável a seguir considera que todo processo P<sub>i</sub> possui uma lista de mensagens recebidas, nomeada de <em>received<sub>i</sub></em>, que indica quais mensagens P<sub>i</sub> já recebeu por multicast. Inicialmente, receivedi está vazia. Quando um processo P<sub>i</sub> deseja enviar uma mensagem m por <b><em>R-multicast</em></b>, ele executa <i>B-multicast(g, m)</i>. Para a entrega de uma mensagem m, um processo P<sub>i</sub> executa <i>B-deliver(m)</i> da seguinte forma: se m ainda não se encontra em receivedi, então m é adicionada a esta lista. Além disso, se o processo que recebe m não é o mesmo que enviou m, então este processo executa B-multicast(g,m). Em seguida, P<sub>i</sub> faz <b><em>R-deliver(m)</em></b>.</p>
+                    <pre>
+                        <code>
+                            Na inicialização:
+                                receivedi = {};
+                      
+                            Para o processo P<sub>i</sub> enviar m com R-multicast para o grupo g
+                                B-multicast(g, m); // P<sub>i</sub> também recebe a mensagem
+                      
+                            Em B-deliver(m) no processo Pj com g = group(m)
+                                se(m não pertence a Receivedj)
+                                    Receivedj = Receivedj U {m};
+                                    se(P<sub>j</sub> diff P<sub>i</sub>)
+                                        B-multicast(g, m);
+                      
+                                R-deliver(m);
+                        </code>
+                    </pre>
+                    <p>Este algoritmo tem como característica permitir aos processos pertencerem a vários grupos, simultaneamente. Observe que uma mesma mensagem m pode chegar mais de uma vez. Contudo, a partir do momento em que ela chegou, pelo menos uma vez, as duplicatas serão detectadas e não serão recebidas, satizfazendo a propriedade de integridade. Além disso, um processo correto entrega, para si mesmo, a mensagem m, o que permite satisfazer a propriedade de validade. A propriedade do acordo significa que, se um processo correto entrega a mensagem m, então todos os outros processos corretos em g entregarão m. Neste algoritmo, como todo processo correto envia a mensagem m por <i>B-multicast</i> após executar <i>B-deliver(m)</i>, o acordo é satisfeito.</p>
+                    <p>Este algoritmo, no entanto, é ineficiente, pois cada processo envia |g| mensagens para cada processo em g, o que resulta em uma complexidade no envio de mensagens próximo de <b>O(n<sup>2</sup>)</b>.</p>
+                    <p>A simulção abaixo demonstra o funcionamento do algortimo de multicast confiável. 
+                    <div class="marg">
+                                    <!--Multicast confiavel-->
+
+                        <div class="algSection">
+                            <div class="algContent">
+                                <div class="instruction">
+                                    <div id="buttonsR3">
+                                        <button onclick="playAlg2()" type="button" class="btn btn-rounded btn-light btn-sm">Iniciar</button>
+                                    </div>
+                                    
+                                    
+                                </div>
+                                
+                                <div class="alg" id="mcsvg"></div>
+                                <div class="interaction">
+                                    <div id="buttonsMC">
+                                        <select id="combobox2"></select>
+                                       
+                                        <button onclick="addPToken2()" type="button" 
+                                            class="btn btn-rounded btn-light btn-sm">Mudar processo</button>
+
+                                        <div class="sliderArea">
+                                            <input class="slider" type="range" min="5" max="7" step="1" value="3"
+                                                id="sliderNodePart2"></input>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+                    </div>
+                </div>
+            </div>
+
+
+        </section>
+
+
+    </div>
+
+    <footer id="footer" class="footer-dark ">
+
+        <div class="copyright-content">
+            <div class="container">
+                <div class="copyright-text text-center">&copy; 2018 - Explorando Sistemas. Todos os direitos reservados.
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- Go to top button -->
+    <a id="goToTop"><i class="fa fa-angle-up top-icon"></i><i class="fa fa-angle-up"></i></a>
+
+    <script type="text/javascript" src="./js/multicast.js"></script>
+    <script type="text/javascript" src="../plugin/d3.js"></script>
+</body>
+</html>
